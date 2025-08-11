@@ -2,7 +2,7 @@
 :root {
   --primary-color: #04481b;
   --secondary-color: #09e252;
-  --text-color: #0c9f0c;
+  --text-color: #ffffffef;
   --background-dark: #0a1a0f;
 }
 
@@ -51,7 +51,7 @@ html, body {
 /* Navegação */
 .main-nav {
   padding: 1.5rem;
-  background-color: rgb(255, 253, 253);
+  background-color: rgba(2, 27, 10, 0.278);
   backdrop-filter: blur(5px);
 }
 
@@ -74,7 +74,7 @@ html, body {
 
 .main-nav a:hover {
   color: var(--primary-color);
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.97);
 }
 
 /* Conteúdo central */
@@ -94,7 +94,7 @@ html, body {
 }
 
 .logo {
-  width: 200px;
+  width: 220px;
   height: auto;
 }
 
@@ -143,14 +143,13 @@ html, body {
 }
 
 .btn-signup {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+ background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  background-size: 200% 100%;
 }
 
 .btn-login:hover, .btn-signup:hover {
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgb(245, 244, 244);
 }
 
 .fill-effect:hover {
@@ -166,8 +165,8 @@ html, body {
 .page-footer {
   padding: 1.5rem;
   text-align: center;
-  color: rgb(1, 59, 15);
-  background-color: rgb(246, 236, 236);
+  color: rgb(255, 255, 255);
+  background-color:  rgba(2, 27, 10, 0.278);
   backdrop-filter: blur(5px);
   font-size: 0.9rem;
 }
@@ -262,7 +261,7 @@ html, body {
   background: rgb(255, 255, 255);
   padding: 2.5rem;
   border-radius: 10px;
-  box-shadow: 0 4px 20px rgb(8, 148, 1);
+  box-shadow: 0 4px 20px rgba(8, 148, 1, 0);
   width: 100%;
   max-width: 400px;
   backdrop-filter: blur(5px);

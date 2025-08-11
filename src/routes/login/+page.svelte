@@ -105,7 +105,7 @@ const handleLogin = async () => {
     
     <form on:submit|preventDefault={handleLogin}>
       <div class="form-group">
-        <label>Email</label>
+      <label for="email">E-mail:</label>
         <input
           type="email"
           bind:value={email}
@@ -116,7 +116,7 @@ const handleLogin = async () => {
       </div>
       
       <div class="form-group">
-        <label>Senha</label>
+      <label for="senha">Senha:</label>
         <input
           type="password"
           bind:value={password}
