@@ -137,7 +137,11 @@
     
     <form on:submit|preventDefault={handleLogin}>
       <div class="form-group">
+<<<<<<< HEAD
         <label for="email">Email</label>
+=======
+      <label for="email">E-mail:</label>
+>>>>>>> 6aa3d885c816431cf13ffcb616cf7f580cd13705
         <input
           id="email"
           type="email"
@@ -149,7 +153,11 @@
       </div>
       
       <div class="form-group">
+<<<<<<< HEAD
         <label for="password">Senha</label>
+=======
+      <label for="senha">Senha:</label>
+>>>>>>> 6aa3d885c816431cf13ffcb616cf7f580cd13705
         <input
           id="password"
           type="password"

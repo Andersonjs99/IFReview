@@ -1,5 +1,6 @@
 /* Estilos base */
 :root {
+<<<<<<< HEAD
   --primary-color: #009933;
   --primary-light: rgba(0, 153, 51, 0.7);
   --primary-dark: #006622;
@@ -7,6 +8,12 @@
   --background-dark: #121212;
   --background-light: rgba(255, 255, 255, 0.1);
   --border-light: rgba(255, 255, 255, 0.2);
+=======
+  --primary-color: #04481b;
+  --secondary-color: #09e252;
+  --text-color: #ffffffef;
+  --background-dark: #0a1a0f;
+>>>>>>> 6aa3d885c816431cf13ffcb616cf7f580cd13705
 }
 
 * {
@@ -46,9 +53,15 @@
 
 /* Navegação */
 .main-nav {
+<<<<<<< HEAD
   display: flex;
   justify-content: flex-end;
   margin-bottom: 2rem;
+=======
+  padding: 1.5rem;
+  background-color: rgba(2, 27, 10, 0.278);
+  backdrop-filter: blur(5px);
+>>>>>>> 6aa3d885c816431cf13ffcb616cf7f580cd13705
 }
 
 .main-nav ul {
@@ -67,7 +80,12 @@
 }
 
 .main-nav a:hover {
+<<<<<<< HEAD
   background-color: var(--background-light);
+=======
+  color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.97);
+>>>>>>> 6aa3d885c816431cf13ffcb616cf7f580cd13705
 }
 
 /* Conteúdo principal */
@@ -88,7 +106,11 @@
 }
 
 .logo {
+<<<<<<< HEAD
   max-width: 200px;
+=======
+  width: 220px;
+>>>>>>> 6aa3d885c816431cf13ffcb616cf7f580cd13705
   height: auto;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
@@ -97,7 +119,75 @@
   animation: floating 3s ease-in-out infinite;
 }
 
+<<<<<<< HEAD
 @keyframes floating {
+=======
+.welcome-text {
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 600px;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+  font-size: 1.1rem;
+  padding: 0 1rem;
+}
+
+/* Botões */
+.action-buttons {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.btn-login, .btn-signup {
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  font-size: 1rem;
+}
+
+.btn-login {
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  background-size: 200% 100%;
+}
+
+.btn-signup {
+ background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  background-size: 200% 100%;
+}
+
+.btn-login:hover, .btn-signup:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgb(245, 244, 244);
+}
+
+.fill-effect:hover {
+  animation: fill 1.5s infinite;
+}
+
+.slide-effect:hover {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  animation: slide 1.5s infinite;
+}
+
+/* Rodapé */
+.page-footer {
+  padding: 1.5rem;
+  text-align: center;
+  color: rgb(255, 255, 255);
+  background-color:  rgba(2, 27, 10, 0.278);
+  backdrop-filter: blur(5px);
+  font-size: 0.9rem;
+}
+
+/* Animações */
+@keyframes float {
+>>>>>>> 6aa3d885c816431cf13ffcb616cf7f580cd13705
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-15px); }
 }
@@ -224,11 +314,19 @@
   transform-origin: left;
 }
 
+<<<<<<< HEAD
 .slide-effect::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
+=======
+.login-box {
+  background: rgb(255, 255, 255);
+  padding: 2.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(8, 148, 1, 0);
+>>>>>>> 6aa3d885c816431cf13ffcb616cf7f580cd13705
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);

@@ -142,8 +142,13 @@
       <h1 class="welcome-title">BEM-VINDO</h1>
 
       <p class="welcome-text">
+<<<<<<< HEAD
         Quer material de estudo específico para o seu curso no IFPE? 
         Acesse a plataforma gratuita criada por alunos para alunos e encontre materiais de aulas práticas, resumos e exercícios!
+=======
+       Quer material de estudo específico para o seu curso no IFPE? 
+       Acesse a plataforma gratuita criada por alunos para alunos e encontre materiais de aulas práticas, resumos e exercícios!
+>>>>>>> 6aa3d885c816431cf13ffcb616cf7f580cd13705
       </p>
 
       <div class="user-type-selector">
