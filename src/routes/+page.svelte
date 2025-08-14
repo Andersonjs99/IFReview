@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-   import '$lib/styles/welcome.css';
+  import '$lib/styles/welcome.css';
 
   class Particle {
     x: number;
@@ -38,8 +38,10 @@
     }
   }
 
+  let userType: 'student' | 'teacher' = 'student';
+
   const redirectTo = (path: string) => {
-    goto(path);
+    goto(`${path}?type=${userType}`);
   };
 
   function hoverEffect(node: HTMLElement) {
@@ -122,16 +124,12 @@
 </script>
 
 <div class="page-container">
-  <!-- Canvas como plano de fundo -->
   <canvas id="particles" class="particles-background"></canvas>
 
-  <!-- Conteúdo principal -->
   <div class="welcome-page">
     <nav class="main-nav">
       <ul>
-        <li><a href="/" use:hoverEffect>Home</a></li>
         <li><a href="/sobre" use:hoverEffect>Sobre</a></li>
-        <li><a href="/materiais" use:hoverEffect>Materiais</a></li>
         <li><a href="/contato" use:hoverEffect>Contato</a></li>
       </ul>
     </nav>
@@ -144,9 +142,26 @@
       <h1 class="welcome-title">BEM-VINDO</h1>
 
       <p class="welcome-text">
-        Conecte-se à plataforma de estudos gratuita criada por alunos para alunos do IFPE.
-        Acesse materiais, resumos e exercícios de todos os cursos.
+        Quer material de estudo específico para o seu curso no IFPE? 
+        Acesse a plataforma gratuita criada por alunos para alunos e encontre materiais de aulas práticas, resumos e exercícios!
       </p>
+
+      <div class="user-type-selector">
+        <div class="toggle-container">
+          <button 
+            class:active={userType === 'student'}
+            on:click={() => userType = 'student'}
+          >
+            👨‍🎓 Aluno
+          </button>
+          <button 
+            class:active={userType === 'teacher'}
+            on:click={() => userType = 'teacher'}
+          >
+            👨‍🏫 Professor
+          </button>
+        </div>
+      </div>
 
       <div class="action-buttons">
         <button on:click={() => redirectTo('/login')} class="btn-login fill-effect">

@@ -1,73 +1,128 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import { db } from '$lib/firebase';
+  import { ref, get, child } from 'firebase/database';
   import '$lib/styles/welcome.css';
 
-  // Opções de cursos
-  const cursos: string[] = [
-    "Informática para Internet",
-    "Logística",
-    "Administração"
-  ];
-
-  // Opções de matérias por curso
-  const materiasPorCurso: Record<string, string[]> = {
-    "Informática para Internet": [
-      "Desenvolvimento Web",
-      "Banco de Dados",
-      "Programação Orientada a Objetos",
-      "Ética",
-      "Projeto e Prática"
-    ],
-    "Logística": [
-      "Fundamentos da Logística",
-      "Gestão de Estoques e Compras",
-      "Transporte e Distribuição",
-      "Gestão da Qualidade",
-      "Informática Aplicada"
-    ],
-    "Administração": [
-      "Gestão de Pessoas",
-      "Marketing Empresarial",
-      "Finanças Corporativas",
-      "Empreendedorismo",
-      "Contabilidade Básica"
-    ]
-  };
-
   // Dados reativos
-  let cursoSelecionado: string = "";
-  let materiaSelecionada: string = "";
-  let dataAula: string = "";
+  let cursos: {id: string, nome: string}[] = [];
+  let materias: {id: string, nome: string}[] = [];
+  let assuntos: {id: string, nome: string}[] = [];
+  let isLoading = false;
+  let error = '';
 
-  // Matérias disponíveis (reagem ao curso selecionado)
-  $: materiasDisponiveis = cursoSelecionado 
-    ? materiasPorCurso[cursoSelecionado] || [] 
-    : [];
+  let cursoSelecionado = '';
+  let materiaSelecionada = '';
+  let assuntoSelecionado = '';
+
+  // Carrega cursos do Firebase
+  onMount(async () => {
+    try {
+      isLoading = true;
+      const snapshot = await get(child(ref(db), 'cursos'));
+      
+      if (snapshot.exists()) {
+        cursos = Object.entries(snapshot.val()).map(([id, curso]: [string, any]) => ({
+          id,
+          nome: curso.nome
+        }));
+      }
+    } catch (err) {
+      console.error('Erro ao carregar cursos:', err);
+      error = 'Erro ao carregar cursos';
+    } finally {
+      isLoading = false;
+      animateParticles();
+    }
+  });
+
+  // Carrega matérias quando curso é selecionado
+  $: {
+    if (cursoSelecionado) {
+      loadMaterias(cursoSelecionado);
+    } else {
+      materias = [];
+      assuntos = [];
+    }
+  }
+
+  // Carrega assuntos quando matéria é selecionada
+  $: {
+    if (materiaSelecionada && cursoSelecionado) {
+      loadAssuntos(cursoSelecionado, materiaSelecionada);
+    } else {
+      assuntos = [];
+    }
+  }
+
+  async function loadMaterias(cursoId: string) {
+    try {
+      isLoading = true;
+      const snapshot = await get(child(ref(db), `cursos/${cursoId}/materias`));
+      
+      if (snapshot.exists()) {
+        materias = Object.entries(snapshot.val()).map(([id, materia]: [string, any]) => ({
+          id,
+          nome: materia.nome
+        }));
+      } else {
+        materias = [];
+      }
+      materiaSelecionada = '';
+      assuntoSelecionado = '';
+    } catch (err) {
+      console.error('Erro ao carregar matérias:', err);
+      error = 'Erro ao carregar matérias';
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  async function loadAssuntos(cursoId: string, materiaId: string) {
+    try {
+      isLoading = true;
+      const snapshot = await get(child(ref(db), `cursos/${cursoId}/materias/${materiaId}/assuntos`));
+      
+      if (snapshot.exists()) {
+        assuntos = Object.entries(snapshot.val()).map(([id, assunto]: [string, any]) => ({
+          id,
+          nome: assunto.nome
+        }));
+      } else {
+        assuntos = [];
+      }
+      assuntoSelecionado = '';
+    } catch (err) {
+      console.error('Erro ao carregar assuntos:', err);
+      error = 'Erro ao carregar assuntos';
+    } finally {
+      isLoading = false;
+    }
+  }
 
   // Função para buscar aulas
   const buscarAulas = async () => {
-  if (!cursoSelecionado || !materiaSelecionada || !dataAula) {
-    alert("Por favor, selecione todos os campos");
-    return;
-  }
+    if (!cursoSelecionado || !materiaSelecionada || !assuntoSelecionado) {
+      error = "Por favor, selecione o curso, matéria e assunto";
+      return;
+    }
 
-  try {
-    // Salvar seleção
-    localStorage.setItem('curso', cursoSelecionado);
-    localStorage.setItem('materia', materiaSelecionada);
-    localStorage.setItem('data', dataAula);
+    try {
+      isLoading = true;
+      error = '';
+      
+      // Redireciona para a página de resultados com os parâmetros
+      await goto(`/resultados-aulas?curso=${cursoSelecionado}&materia=${materiaSelecionada}&assunto=${assuntoSelecionado}`);
+    } catch (err) {
+      console.error('Erro na busca:', err);
+      error = "Erro ao buscar aulas";
+    } finally {
+      isLoading = false;
+    }
+  };
 
-    await new Promise(resolve => setTimeout(resolve, 500));
-    await goto('/resultados-aulas');
-  } catch (error) {
-    console.error('Erro na busca:', error);
-    alert("Erro ao buscar aulas");
-  }
-};
-
-
-  // Função da animação de partículas
+  // Função da animação de partículas (mantida igual)
   const animateParticles = () => {
     const canvas = document.getElementById('particles') as HTMLCanvasElement;
     if (!canvas) return;
@@ -134,11 +189,6 @@
     window.addEventListener('resize', resizeCanvas);
     return () => window.removeEventListener('resize', resizeCanvas);
   };
-
-  // Inicializa a animação ao carregar a página
-  onMount(() => {
-    animateParticles();
-  });
 </script>
 
 <!-- Fundo animado -->
@@ -147,15 +197,24 @@
 <!-- Conteúdo principal -->
 <div class="container">
   <div class="card">
-    <h1>Selecione o curso</h1>
+    <h1>Selecione o conteúdo</h1>
+
+    {#if error}
+      <div class="error-message">{error}</div>
+    {/if}
 
     <!-- Curso -->
     <div class="campo">
       <label for="curso">Curso</label>
-      <select id="curso" bind:value={cursoSelecionado} class="form-select">
+      <select 
+        id="curso" 
+        bind:value={cursoSelecionado} 
+        class="form-select"
+        disabled={isLoading}
+      >
         <option value="">-- Selecione o curso --</option>
         {#each cursos as curso}
-          <option value={curso}>{curso}</option>
+          <option value={curso.id}>{curso.nome}</option>
         {/each}
       </select>
     </div>
@@ -167,30 +226,34 @@
         id="materia" 
         bind:value={materiaSelecionada} 
         class="form-select"
-        disabled={!cursoSelecionado}
+        disabled={!cursoSelecionado || isLoading}
       >
         <option value="">{cursoSelecionado ? '-- Selecione a matéria --' : 'Selecione um curso primeiro'}</option>
-        {#each materiasDisponiveis as materia}
-          <option value={materia}>{materia}</option>
+        {#each materias as materia}
+          <option value={materia.id}>{materia.nome}</option>
         {/each}
       </select>
     </div>
 
-    <!-- Data -->
+    <!-- Assunto -->
     <div class="campo">
-      <label for="dataAula">Data da Aula</label>
-      <input 
-        type="date" 
-        id="dataAula" 
-        bind:value={dataAula}
-        class="form-input"
-        min={new Date().toISOString().split('T')[0]}
-      />
+      <label for="assunto">Assunto</label>
+      <select 
+        id="assunto" 
+        bind:value={assuntoSelecionado} 
+        class="form-select"
+        disabled={!materiaSelecionada || isLoading}
+      >
+        <option value="">{materiaSelecionada ? '-- Selecione o assunto --' : 'Selecione uma matéria primeiro'}</option>
+        {#each assuntos as assunto}
+          <option value={assunto.id}>{assunto.nome}</option>
+        {/each}
+      </select>
     </div>
 
     <!-- Botão -->
-    <button on:click={buscarAulas} class="buscar-button">
-      Buscar Aulas
+    <button on:click={buscarAulas} class="buscar-button" disabled={isLoading}>
+      {isLoading ? 'Carregando...' : 'Buscar Aulas'}
     </button>
   </div>
 </div>
@@ -217,7 +280,7 @@
     margin-bottom: 20px;
   }
 
-  .form-select, .form-input {
+  .form-select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -239,6 +302,11 @@
     background-color: #007a29;
   }
 
+  .buscar-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
   .particles-background {
     position: fixed;
     top: 0;
@@ -246,5 +314,14 @@
     width: 100%;
     height: 100%;
     z-index: 0;
+  }
+
+  .error-message {
+    color: #ff3333;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: #ffeeee;
+    border-radius: 5px;
+    text-align: center;
   }
 </style>

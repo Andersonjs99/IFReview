@@ -1,32 +1,70 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import '$lib/styles/welcome.css'; // Mesmo CSS da welcome page
+  import { auth, db } from '$lib/firebase';
+  import { createUserWithEmailAndPassword } from 'firebase/auth';
+  import { ref, set } from 'firebase/database';
+  import '$lib/styles/welcome.css';
 
   let name = '';
   let email = '';
   let password = '';
   let confirmPassword = '';
+  let error = '';
+  let isLoading = false;
 
   const handleSignup = async () => {
     try {
-      // Validação básica
-      if (password !== confirmPassword) {
-        alert('As senhas não coincidem!');
-        return;
+      isLoading = true;
+      error = '';
+      
+      // Validações
+      if (!name || !email || !password || !confirmPassword) {
+        throw new Error('Preencha todos os campos');
       }
 
-      console.log('Signup attempt:', { name, email, password });
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (password !== confirmPassword) {
+        throw new Error('As senhas não coincidem');
+      }
+
+      if (password.length < 6) {
+        throw new Error('A senha deve ter pelo menos 6 caracteres');
+      }
+
+      console.log('Tentativa de cadastro:', { name, email });
       
-      // Redireciona para login com flag de sucesso
+      // Criar usuário na autenticação
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Salvar dados adicionais no Realtime Database
+      await set(ref(db, 'users/' + user.uid), {
+        name,
+        email,
+        createdAt: Date.now(),
+        lastLogin: Date.now()
+      });
+      
+      // Redirecionar para login com flag de sucesso
       await goto('/login?signupSuccess=true');
-    } catch (error) {
-      console.error('Signup failed:', error);
+    } catch (err) {
+      console.error('Falha no cadastro:', err);
+      error = err.message;
+      
+      // Tratamento específico de erros do Firebase
+      if (err.code === 'auth/email-already-in-use') {
+        error = 'Este email já está cadastrado';
+      } else if (err.code === 'auth/invalid-email') {
+        error = 'Email inválido';
+      } else if (err.code === 'auth/weak-password') {
+        error = 'Senha muito fraca (mínimo 6 caracteres)';
+      }
+    } finally {
+      isLoading = false;
     }
   };
 
-  // Mesma animação de partículas do login
+  // Animação de partículas
   onMount(() => {
     const canvas = document.getElementById('particles') as HTMLCanvasElement;
     if (!canvas) return;
@@ -95,16 +133,17 @@
   });
 </script>
 
-<!-- Mesmo fundo animado -->
 <canvas id="particles" class="particles-background"></canvas>
 
-<!-- Estrutura do formulário corrigida -->
 <div class="login-container">
   <div class="login-box">
     <h1>Criar Conta</h1>
     
+    {#if error}
+      <div class="error-message">{error}</div>
+    {/if}
+    
     <form on:submit|preventDefault={handleSignup}>
-      <!-- Campo Nome - Corrigido -->
       <div class="form-group">
         <label for="name">Nome Completo</label>
         <input
@@ -117,7 +156,6 @@
         />
       </div>
       
-      <!-- Campo Email - Corrigido -->
       <div class="form-group">
         <label for="email">Email</label>
         <input
@@ -130,7 +168,6 @@
         />
       </div>
       
-      <!-- Campo Senha - Corrigido -->
       <div class="form-group">
         <label for="password">Senha</label>
         <input
@@ -138,13 +175,12 @@
           type="password"
           bind:value={password}
           required
-          placeholder="Sua senha"
+          placeholder="Sua senha (mínimo 6 caracteres)"
           class="form-input"
           minlength="6"
         />
       </div>
       
-      <!-- Campo Confirmar Senha - Corrigido -->
       <div class="form-group">
         <label for="confirmPassword">Confirme sua Senha</label>
         <input
@@ -158,8 +194,8 @@
         />
       </div>
       
-      <button type="submit" class="login-button">
-        Cadastrar
+      <button type="submit" class="login-button" disabled={isLoading}>
+        {isLoading ? 'Cadastrando...' : 'Cadastrar'}
       </button>
     </form>
     
@@ -168,3 +204,88 @@
     </div>
   </div>
 </div>
+
+<style>
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .login-box {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .login-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #009933;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .login-button:hover {
+    background-color: #007a29;
+  }
+  
+  .login-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .signup-link {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  .signup-link a {
+    color: #009933;
+    text-decoration: none;
+  }
+  
+  .signup-link a:hover {
+    text-decoration: underline;
+  }
+  
+  .error-message {
+    color: #ff3333;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: #ffeeee;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  .particles-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+</style>
