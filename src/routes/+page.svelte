@@ -152,13 +152,13 @@
             class:active={userType === 'student'}
             on:click={() => userType = 'student'}
           >
-            👨‍🎓 Aluno
+            Aluno
           </button>
           <button 
             class:active={userType === 'teacher'}
             on:click={() => userType = 'teacher'}
           >
-            👨‍🏫 Professor
+            Professor
           </button>
         </div>
       </div>
